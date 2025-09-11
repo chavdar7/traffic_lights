@@ -52,9 +52,6 @@ class WalkLight:
     def setColor(self, color: Color):
         self.color = color
 
-
-
-
 # MAIN SYSTEM
 class TrafficSystem:
     def __init__(self):
@@ -74,7 +71,7 @@ class TrafficSystem:
         self.active_cycle = 1  # 1:(1,2), 2:(3,4), 3:(5,6), 4:(7,8)
         self.cycle_counter = 0
 
-        self.running = True
+        self.running = False
         self.thread = None
 
 
@@ -159,7 +156,8 @@ class TrafficSystem:
             self.cycle_counter = 0
 
             if self.active_cycle > 4:
-                self.active_cycle = 1
+                self.active_cycle = 1      
+            self.set_active_cycle()
 
     def get_timestamp(self):
         return datetime.now().strftime("%H:%M:%S")
@@ -187,11 +185,12 @@ class TrafficSystem:
             "lights": {},
             "queues": {}
         }
+            
         
         for i in range(1, 9):
             status["lights"][f"light_{i}"] = {
-                "car_light": self.carLights[i].getColor(),
-                "pedestrian_light": self.walkLights[i].getColor()
+                "car_light": self.carLights[i].getColor().value,  # .value ekle!
+                "pedestrian_light": self.walkLights[i].getColor().value  # .value ekle!
             }
             status["queues"][f"queue_{i}"] = {
                 "waiting_cars": len(self.waitingCars[i]),

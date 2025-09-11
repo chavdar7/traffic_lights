@@ -72,7 +72,7 @@ def background_updates():
     """Arka planda sürekli durum güncelleme gönder"""
     while True:
         if trafik_sistemi.running:
-            status = trafik_sistemi.print_status()
+            status = trafik_sistemi.get_system_status()
             socketio.emit('status', status)
         time.sleep(1)  # Her saniye güncelle
 
@@ -86,4 +86,5 @@ update_thread.start()
 if __name__ == '__main__':
     print("Flask Traffic System Web Interface")
     print("http://localhost:5000 adresinde çalışıyor...")
+    trafik_sistemi.start()  # Otomatik başlat
     socketio.run(app, debug=True, port=5000)
