@@ -19,10 +19,14 @@ def index():
     """Ana sayfa"""
     return render_template('index.html')
 
+
+
 @app.route('/api/status')
 def get_status():
     """Sistem durumunu JSON olarak döndür"""
     return jsonify(trafik_sistemi.get_system_status())
+
+
 
 @app.route('/api/start', methods=['POST'])
 def start_system():
@@ -32,6 +36,8 @@ def start_system():
     else:
         return jsonify({"status": "error", "message": "Sistem zaten çalışıyor"})
     
+
+    
 @app.route('/api/stop', methods=['POST'])
 def stop_system():
     """Sistemi durdur"""
@@ -39,6 +45,8 @@ def stop_system():
         return jsonify({"status": "success", "message": "Sistem durduruldu"})
     else:
         return jsonify({"status": "error", "message": "Sistem zaten durmuş"})
+
+
 
 
 @app.route('/api/reset', methods=['POST'])

@@ -68,6 +68,7 @@ class TrafficSystem:
 
         self.green_duration = 10    # 10 saniye yeşil
         self.red_duration = 30      # 30 saniye kırmızı (diğer 3 döngü süresi)
+
         self.active_cycle = 1  # 1:(1,2), 2:(3,4), 3:(5,6), 4:(7,8)
         self.cycle_counter = 0
 
