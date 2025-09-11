@@ -1,19 +1,3 @@
-# from flask import Flask, jsonify, request
-# from flask_socketio import SocketIO, emit
-
-# app = Flask(__name__)
-# socketio = SocketIO(app)
-
-
-# @app.route("/")
-# def home():
-#     return "Welcome to the Flask API!"
-
-
-# if __name__ == "__main__":
-#     socketio.run(app, debug=True)
-
-
 from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
 import json
@@ -38,7 +22,7 @@ def index():
 @app.route('/api/status')
 def get_status():
     """Sistem durumunu JSON olarak döndür"""
-    return jsonify(trafik_sistemi.print_status())
+    return jsonify(trafik_sistemi.get_system_status())
 
 @app.route('/api/start', methods=['POST'])
 def start_system():
@@ -47,6 +31,14 @@ def start_system():
         return jsonify({"status": "success", "message": "Sistem başlatıldı"})
     else:
         return jsonify({"status": "error", "message": "Sistem zaten çalışıyor"})
+    
+@app.route('/api/stop', methods=['POST'])
+def stop_system():
+    """Sistemi durdur"""
+    if trafik_sistemi.stop():
+        return jsonify({"status": "success", "message": "Sistem durduruldu"})
+    else:
+        return jsonify({"status": "error", "message": "Sistem zaten durmuş"})
 
 
 @app.route('/api/reset', methods=['POST'])
@@ -59,8 +51,21 @@ def reset_system():
     return jsonify({"status": "success", "message": "Sistem sıfırlandı"})
 
 # ===================== WEBSOCKET EVENTS =====================
+@socketio.on('connect')
+def handle_connect():
+    """İstemci bağlandığında"""
+    print('İstemci bağlandı')
+    emit('status', trafik_sistemi.get_system_status())
 
+@socketio.on('disconnect')
+def handle_disconnect():
+    """İstemci ayrıldığında"""
+    print('İstemci ayrıldı')
 
+@socketio.on('request_status')
+def handle_status_request():
+    """İstemci durum istediğinde"""
+    emit('status', trafik_sistemi.get_system_status())
 # ===================== BACKGROUND UPDATES =====================
 
 def background_updates():

@@ -4,6 +4,7 @@ from enum import Enum
 from collections import deque
 import random
 import time
+import threading
 
 # ENUM AND CLASS DEFINITIONS
 class Status(Enum):
@@ -68,10 +69,13 @@ class TrafficSystem:
         self.next_car_id = 1
         self.next_walker_id = 1
 
+        self.green_duration = 10    # 10 saniye yeşil
+        self.red_duration = 30      # 30 saniye kırmızı (diğer 3 döngü süresi)
         self.active_cycle = 1  # 1:(1,2), 2:(3,4), 3:(5,6), 4:(7,8)
         self.cycle_counter = 0
 
         self.running = True
+        self.thread = None
 
 
     #sistemi başlatacağız
@@ -89,20 +93,6 @@ class TrafficSystem:
         self.set_active_cycle()
 
         print("Trafik sistemi başlatıldı.")
-
-        # while True:
-        #     self.generate_Random()
-        #     self.current_time += 1
-        #     time.sleep(1)  # 1 saniye bekle (simülasyon için)
-
-        #     if self.current_time % 10 == 0:
-        #         print("bekleyen arabalar")
-        #         for i in range(1,9):
-        #             print(self.waitingCars[i])
-
-        #         print("bekleyen yayalar")
-        #         for i in range(1,9):
-        #             print(self.waitingWalkers[i])
     
     # aktif döngüyü ayarlayacağız
     def set_active_cycle(self):
@@ -158,36 +148,13 @@ class TrafficSystem:
                     print(f"[{self.get_timestamp()}] Araba {car.id} ışık {light_id}'den geçti.")
                     car.status = Status.COMPLETED
 
-    #sistemi çalıştıracağız
-    # def run(self):
-    #     print("Trafik sistemi çalışıyor...")
-    #     while True:
-    #         self.generate_Random()
-    #         self.process_Traffic()
-    #         self.current_time += 1
-    #         self.cycle_counter += 1
-    #         time.sleep(1)  # 1 saniye bekle (simülasyon için)
-
-    #         if self.cycle_counter >= 10:  # Her 10 saniyede bir döngüyü değiştir
-    #             self.active_cycle = (self.active_cycle % 4) + 1
-    #             self.set_active_cycle()
-    #             self.cycle_counter = 0
-
-    #         if self.current_time % 10 == 0:
-    #             print("Bekleyen arabalar:")
-    #             for i in range(1, 9):
-    #                 print(f"Işık {i}: {[car.id for car in self.waitingCars[i]]}")
-
-    #             print("Bekleyen yayalar:")
-    #             for i in range(1, 9):
-    #                 print(f"Işık {i}: {[walker.id for walker in self.waitingWalkers[i]]}")
 
     #faz kontrolü
     def check_phase_change(self):
 
         self.cycle_counter += 1
 
-        if self.cycle_counter >= 10:  # Her 10 saniyede bir döngüyü değiştir
+        if self.cycle_counter >= self.green_duration:  # Her 10 saniyede bir döngüyü değiştir
             self.active_cycle += 1
             self.cycle_counter = 0
 
@@ -198,10 +165,9 @@ class TrafficSystem:
         return datetime.now().strftime("%H:%M:%S")
     
 
-
     def print_status(self):
         """Sistem durumunu yazdır"""
-        print(f"\n=== Zaman: {self.current_time}s - Döngü: {self.active_cycle} ({self.cycle_counter}/{10}) ===")
+        print(f"\n=== Zaman: {self.current_time}s - Döngü: {self.active_cycle} ({self.cycle_counter}/{self.green_duration}) ===")
 
         for i in range(1, 9):
             araba_durum = self.carLights[i].getColor()
@@ -210,6 +176,30 @@ class TrafficSystem:
 
             print(f"Işık {i}: {araba_durum} - Bekleyen araba: {bekleyen_araba}, Bekleyen yaya: {bekleyen_yaya}")
         print()
+
+
+    def get_system_status(self):
+        """Sistem durumunu JSON formatında döndür (Flask için)"""
+        status = {
+            "current_time": self.current_time,
+            "active_cycle": self.active_cycle,
+            "cycle_progress": f"{self.cycle_counter}/{self.green_duration}",
+            "lights": {},
+            "queues": {}
+        }
+        
+        for i in range(1, 9):
+            status["lights"][f"light_{i}"] = {
+                "car_light": self.carLights[i].getColor(),
+                "pedestrian_light": self.walkLights[i].getColor()
+            }
+            status["queues"][f"queue_{i}"] = {
+                "waiting_cars": len(self.waitingCars[i]),
+                "waiting_pedestrians": len(self.waitingWalkers[i])
+            }
+        
+        return status
+
 
 
     #run denememeee
@@ -233,7 +223,51 @@ class TrafficSystem:
         print("Simülasyon tamamlandı.")
         self.running = False
 
+
+
+    def start(self):
+        """Sistemi başlat (thread'de)"""
+        if not self.running:
+            self.running = True
+            self.thread = threading.Thread(target=self.run_simulation, args=(60,))
+            self.thread.daemon = True  # Ana program kapandığında thread'de kapansın
+            self.thread.start()
+            return True
+        return False
+
+    def stop(self):
+        """Sistemi durdur"""
+        if self.running:
+            self.running = False
+            if self.thread:
+                self.thread.join(timeout=2)  # En fazla 2 saniye bekle
+            return True
+        return False
+
+    def is_running(self):
+        """Sistem çalışıyor mu?"""
+        return self.running
+    
+
+def main():
+    """Ana program - test için"""
+    sistem = TrafficSystem()
+    try:
+        print("Trafik Işığı Sistemi")
+        print("Çıkış için Ctrl+C basın")
+    
+        sistem.start()
+        
+        # Ana thread'i canlı tut
+        while sistem.is_running():
+            time.sleep(1)
+            
+    except KeyboardInterrupt:
+        print("\n\nSistem durduruluyor...")
+        sistem.stop()
+        print("Sistem durduruldu!")
+
+
 if __name__ == "__main__":
-    traffic_system = TrafficSystem()
-    traffic_system.run_simulation(120)  # 120 saniyelik simülasyon
+    main()
 
