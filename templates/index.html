@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trafik Işığı Sistemi - Görüntüleyici</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-traffic-light"></i> Trafik Işığı Sistemi</h1>
+        </div>
+
+        <!-- Kavşak Resmi -->
+        <div class="intersection-image" id="intersection-image">
+            <div class="image-placeholder">
+                <img src="/static/images/traffic.png" alt="Kavşak Görünümü">
+            </div>
+        </div>
+
+        <!-- Ana Paneller -->
+        <div class="panels-container">
+            <!-- Trafik Işıkları Paneli -->
+            <div class="panel car-panel">
+                <div class="panel-header">
+                    <i class="fas fa-car"></i>
+                    Trafik Işıkları
+                </div>
+                <div class="lights-list" id="car-lights">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+            </div>
+            
+            <!-- Yaya Işıkları Paneli -->
+            <div class="panel pedestrian-panel">
+                <div class="panel-header">
+                    <i class="fas fa-walking"></i>
+                    Yaya Işıkları
+                </div>
+                <div class="lights-list" id="pedestrian-lights">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Döngü Göstergesi -->
+        <div class="cycle-indicator">
+            <div class="cycle-header">
+                <i class="fas fa-sync-alt"></i> Aktif Döngü Bilgisi
+            </div>
+            <div class="cycle-display">
+                <div>
+                    <div class="cycle-number" id="active-cycle">1</div>
+                    <div style="color: #7f8c8d;">Döngü</div>
+                </div>
+                <div>
+                    <div class="cycle-progress" id="cycle-progress">0/30</div>
+                    <div style="color: #7f8c8d;">İlerleme</div>
+                </div>
+                <div>
+                    <div class="cycle-number" id="system-time" style="font-size: 1.5rem;">0s</div>
+                    <div style="color: #7f8c8d;">Toplam Süre</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+
+        <!-- Sistem Durumu -->
+        <div class="system-status">
+            <h3><i class="fas fa-chart-bar"></i> Sistem İstatistikleri</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-value" id="total-cars">0</div>
+                    <div class="status-label">Bekleyen Araç</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="total-pedestrians">0</div>
+                    <div class="status-label">Bekleyen Yaya</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="green-lights">0</div>
+                    <div class="status-label">Yeşil Işık</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="connection-status">
+                        <span class="loading"></span>
+                    </div>
+                    <div class="status-label">Bağlantı</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

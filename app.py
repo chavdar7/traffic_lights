@@ -1,0 +1,84 @@
+# from flask import Flask, jsonify, request
+# from flask_socketio import SocketIO, emit
+
+# app = Flask(__name__)
+# socketio = SocketIO(app)
+
+
+# @app.route("/")
+# def home():
+#     return "Welcome to the Flask API!"
+
+
+# if __name__ == "__main__":
+#     socketio.run(app, debug=True)
+
+
+from flask import Flask, render_template, jsonify, request
+from flask_socketio import SocketIO, emit
+import json
+import threading
+import time
+from traffic_logic import TrafficSystem
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'traffic_secret_key'
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Global trafik sistemi instance
+trafik_sistemi = TrafficSystem()
+
+# ===================== WEB ROUTES =====================
+
+@app.route('/')
+def index():
+    """Ana sayfa"""
+    return render_template('index.html')
+
+@app.route('/api/status')
+def get_status():
+    """Sistem durumunu JSON olarak döndür"""
+    return jsonify(trafik_sistemi.print_status())
+
+@app.route('/api/start', methods=['POST'])
+def start_system():
+    """Sistemi başlat"""
+    if trafik_sistemi.start():
+        return jsonify({"status": "success", "message": "Sistem başlatıldı"})
+    else:
+        return jsonify({"status": "error", "message": "Sistem zaten çalışıyor"})
+
+
+@app.route('/api/reset', methods=['POST'])
+def reset_system():
+    """Sistemi sıfırla"""
+    global trafik_sistemi
+    trafik_sistemi.stop()
+    time.sleep(1)
+    trafik_sistemi = TrafficSystem()
+    return jsonify({"status": "success", "message": "Sistem sıfırlandı"})
+
+# ===================== WEBSOCKET EVENTS =====================
+
+
+# ===================== BACKGROUND UPDATES =====================
+
+def background_updates():
+    """Arka planda sürekli durum güncelleme gönder"""
+    while True:
+        if trafik_sistemi.running:
+            status = trafik_sistemi.print_status()
+            socketio.emit('status', status)
+        time.sleep(1)  # Her saniye güncelle
+
+# Background thread başlat
+update_thread = threading.Thread(target=background_updates)
+update_thread.daemon = True
+update_thread.start()
+
+# ===================== MAIN EXECUTION =====================
+
+if __name__ == '__main__':
+    print("Flask Traffic System Web Interface")
+    print("http://localhost:5000 adresinde çalışıyor...")
+    socketio.run(app, debug=True, port=5000)
