@@ -75,7 +75,7 @@ class TrafficSystem:
 
         # Kullanıcıdan alınacak parametreler
         self.car_interval = 1
-        self.car_count = 10
+        self.car_count = 3
         self.walker_interval = 1
         self.walker_count = 3
 
@@ -228,7 +228,9 @@ class TrafficSystem:
             }
             status["queues"][f"queue_{i}"] = {
                 "waiting_cars": len(self.waitingCars[i]),
-                "waiting_pedestrians": len(self.waitingWalkers[i])
+                "waiting_pedestrians": len(self.waitingWalkers[i]),
+                "waiting_cars_ids": [car.id for car in self.waitingCars[i]],
+                "waiting_pedestrians_ids": [walker.id for walker in self.waitingWalkers[i]]
             }
         
         return status
@@ -250,6 +252,11 @@ class TrafficSystem:
             # if self.current_time % 10 == 0:
             #     self.print_status()
 
+            # if self.current_time % 10 == 0:
+            #     for i in range(1, 9):
+            #         print(f"Işık {i}: bekleyen arabalar: {[car.id for car in self.waitingCars[i]]}")
+                
+            
             self.current_time += 1
             time.sleep(1)  # 1 saniye bekle 
 

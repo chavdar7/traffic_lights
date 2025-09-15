@@ -39,7 +39,19 @@
                 `;
                 pedestrianLights.appendChild(lightItem);
             }
+
+            // Bekleyen araçlar ve yayalar listesi
+            for (let i = 1; i <= 8; i++) {
+                const carListItem = document.createElement('li');
+                carListItem.id = `waiting-cars-list-${i}`;
+                document.getElementById('waiting-cars-list').appendChild(carListItem);
+
+                const pedestrianListItem = document.createElement('li');
+                pedestrianListItem.id = `waiting-pedestrians-list-${i}`;
+                document.getElementById('waiting-pedestrians-list').appendChild(pedestrianListItem);
+            }
         }
+
 
         // Görüntüyü güncelle
         function updateDisplay(data) {
@@ -88,6 +100,13 @@
                 
                 document.getElementById(`car-queue-${i}`).textContent = carQueue;
                 document.getElementById(`pedestrian-queue-${i}`).textContent = pedestrianQueue;
+
+                // Bekleyen araba ve yaya ID'lerini göster
+                const carWaitingList = data.queues[`queue_${i}`].waiting_cars_ids;
+                const walkerWaitingList = data.queues[`queue_${i}`].waiting_pedestrians_ids;
+                document.getElementById(`waiting-cars-list-${i}`).textContent = `Işık ${i}: ${carWaitingList}`;
+                document.getElementById(`waiting-pedestrians-list-${i}`).textContent = `Işık ${i}: ${walkerWaitingList}`;
+
                 
                 totalCars += carQueue;
                 totalPedestrians += pedestrianQueue;
