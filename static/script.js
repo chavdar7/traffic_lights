@@ -114,10 +114,40 @@
             updateDisplay(data);
         });
 
+
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             createLightLists();
-            
+
+            // Başlat formu
+            const startForm = document.getElementById('start-form');
+            startForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const carInterval = document.getElementById('car-interval').value;
+                const carCount = document.getElementById('car-count').value;
+                const walkerInterval = document.getElementById('walker-interval').value;
+                const walkerCount = document.getElementById('walker-count').value;
+                fetch('/api/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        car_interval: Number(carInterval),
+                        car_count: Number(carCount),
+                        walker_interval: Number(walkerInterval),
+                        walker_count: Number(walkerCount)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Sistem başlatıldı:', data);
+                })
+                .catch(error => {
+                    console.log('Sistem başlatılamadı:', error);
+                });
+            });
+
             // İlk durum güncellemesi
             fetch('/api/status')
                 .then(response => response.json())

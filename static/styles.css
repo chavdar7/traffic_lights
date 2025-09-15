@@ -58,6 +58,17 @@ body {
     border-radius: 8px;
 }
 
+.system-control-panel{
+    margin-bottom: 30px; 
+    background: #fff; 
+    border-radius: 10px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    padding: 30px; 
+    min-height: 400px;
+    margin-left: 10px;
+    border: 2px dashed #bdc3c7;
+}
+
 /* Panel Yapısı */
 .panels-container {
     display: grid;
@@ -154,6 +165,18 @@ body {
 
 .light-status i {
     font-size: 1rem;
+}
+
+/* bekleyenlerin listeleri */
+.waiting-lists{
+    background-color: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 30px;
+    gap: 20px;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 @keyframes pulse-green {

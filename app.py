@@ -12,6 +12,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Global trafik sistemi instance
 trafik_sistemi = TrafficSystem()
 
+
 # ===================== WEB ROUTES =====================
 
 @app.route('/')
@@ -31,6 +32,15 @@ def get_status():
 @app.route('/api/start', methods=['POST'])
 def start_system():
     """Sistemi başlat"""
+    data = request.get_json()
+    car_interval = data.get('car_interval', 1)
+    car_count = data.get('car_count', 10)
+    walker_interval = data.get('walker_interval', 1)
+    walker_count = data.get('walker_count', 3)
+    trafik_sistemi.car_interval = int(car_interval)
+    trafik_sistemi.car_count = int(car_count)
+    trafik_sistemi.walker_interval = int(walker_interval)
+    trafik_sistemi.walker_count = int(walker_count)
     if trafik_sistemi.start():
         return jsonify({"status": "success", "message": "Sistem başlatıldı"})
     else:
@@ -94,5 +104,5 @@ update_thread.start()
 if __name__ == '__main__':
     print("Flask Traffic System Web Interface")
     print("http://localhost:5000 adresinde çalışıyor...")
-    trafik_sistemi.start()  # Otomatik başlat
+    #trafik_sistemi.start()  # Otomatik başlat
     socketio.run(app, debug=True, port=5000)

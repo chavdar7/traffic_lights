@@ -9,12 +9,14 @@
 </head>
 <body>
     <div class="container">
-
+        
         <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-traffic-light"></i> Trafik Işığı Sistemi</h1>
         </div>
 
+        <div style="display: grid; grid-template-columns: 2fr 1fr;">
+        
         <!-- Kavşak Resmi -->
         <div class="intersection-image" id="intersection-image">
             <div class="image-placeholder">
@@ -22,13 +24,40 @@
             </div>
         </div>
 
+        <!-- Sistem Kontrol Paneli -->
+        <div class="system-control-panel">
+            <h2 style="margin-bottom: 16px;"><i class="fas fa-cogs"></i> Simülasyon Ayarları</h2>
+            <form id="start-form">
+                <div style="margin-bottom: 12px;">
+                    <label for="car-interval">Araba Oluşma Sıklığı (sn):</label>
+                    <input type="number" id="car-interval" name="car_interval" min="1" value="1" style="width: 80px;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label for="car-count">Oluşacak Araba Sayısı:</label>
+                    <input type="number" id="car-count" name="car_count" min="1" value="10" style="width: 80px;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label for="walker-interval">Yaya Oluşma Sıklığı (sn):</label>
+                    <input type="number" id="walker-interval" name="walker_interval" min="1" value="1" style="width: 80px;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label for="walker-count">Oluşacak Yaya Sayısı:</label>
+                    <input type="number" id="walker-count" name="walker_count" min="1" value="3" style="width: 80px;">
+                </div>
+                <button type="submit" id="start-btn" style="margin-top: 16px; padding: 8px 24px; font-size: 1rem; background: #27ae60; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-play"></i> Sistemi Başlat
+                </button>
+            </form>
+        </div>
+        </div>
+        
         <!-- Ana Paneller -->
         <div class="panels-container">
             <!-- Trafik Işıkları Paneli -->
             <div class="panel car-panel">
                 <div class="panel-header">
                     <i class="fas fa-car"></i>
-                    Trafik Işıkları
+                    Araba Işıkları
                 </div>
                 <div class="lights-list" id="car-lights">
                     <!-- JavaScript ile doldurulacak -->
@@ -46,6 +75,22 @@
                 </div>
             </div>
         </div>
+
+        <!-- Bekleyen listeleri -->
+         <div class="waiting-lists">
+            <div class="waiting-cars">
+                <h3>Bekleyen Araçlar</h3>
+                <ul id="waiting-cars-list">
+                    <!-- JavaScript ile doldurulacak -->
+                </ul>
+            </div>
+            <div class="waiting-pedestrians">
+                <h3>Bekleyen Yayalar</h3>
+                <ul id="waiting-pedestrians-list">
+                    <!-- JavaScript ile doldurulacak -->
+                </ul>
+            </div>
+         </div>
         
         <!-- Döngü Göstergesi -->
         <div class="cycle-indicator">

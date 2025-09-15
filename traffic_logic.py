@@ -14,7 +14,6 @@ class Status(Enum):
 
 class Color(Enum):
     RED = "red"
-    YELLOW = "yellow"
     GREEN = "green"
     
 
@@ -67,7 +66,6 @@ class TrafficSystem:
         self.next_walker_id = 1
 
         self.green_duration = 10    # 10 saniye yeşil
-        self.red_duration = 30      # 30 saniye kırmızı (diğer 3 döngü süresi)
 
         self.active_cycle = 1  # 1:(1,2), 2:(3,4), 3:(5,6), 4:(7,8)
         self.cycle_counter = 0
@@ -75,15 +73,21 @@ class TrafficSystem:
         self.running = False
         self.thread = None
 
+        # Kullanıcıdan alınacak parametreler
+        self.car_interval = 1
+        self.car_count = 10
+        self.walker_interval = 1
+        self.walker_count = 3
+
 
     #sistemi başlatacağız
     def initialize(self):
         print("Trafik sistemi başlatılıyor!")
 
         #tüm ışıkları kırmızı yapacağız
-        for i in range(1, 9):
-            self.carLights[i].setColor(Color.RED)
-            self.walkLights[i].setColor(Color.RED)
+        # for i in range(1, 9):
+        #     self.carLights[i].setColor(Color.RED)
+        #     self.walkLights[i].setColor(Color.RED)
 
         #ilk döngüyü başlatacağız (1,2 numaralı ışıklar yeşil)
         self.active_cycle = 1
@@ -102,33 +106,53 @@ class TrafficSystem:
         if self.active_cycle == 1:
             self.carLights[1].setColor(Color.GREEN)
             self.carLights[2].setColor(Color.GREEN)
-            print(f"[{self.get_timestamp()}] Döngü 1 aktif - Işık 1,2 yeşil")
+
+            self.walkLights[1].setColor(Color.GREEN)
+            self.walkLights[3].setColor(Color.GREEN)
+
+            print(f"[{self.get_timestamp()}] Döngü 1 aktif - Trafik Işık 1,2; Yaya Işık 1,3 yeşil")
+
         elif self.active_cycle == 2:
             self.carLights[3].setColor(Color.GREEN)
             self.carLights[4].setColor(Color.GREEN)
-            print(f"[{self.get_timestamp()}] Döngü 2 aktif - Işık 3,4 yeşil")
+
+            self.walkLights[6].setColor(Color.GREEN)
+            self.walkLights[8].setColor(Color.GREEN)
+            
+            print(f"[{self.get_timestamp()}] Döngü 2 aktif - Trafik Işık 3,4; Yaya Işık 6,8 yeşil")
+        
         elif self.active_cycle == 3:
             self.carLights[5].setColor(Color.GREEN)
             self.carLights[6].setColor(Color.GREEN)
-            print(f"[{self.get_timestamp()}] Döngü 3 aktif - Işık 5,6 yeşil")
+
+            self.walkLights[5].setColor(Color.GREEN)
+            self.walkLights[7].setColor(Color.GREEN)
+
+            print(f"[{self.get_timestamp()}] Döngü 3 aktif - Trafik Işık 5,6; Yaya Işık 5,7 yeşil")
+        
         elif self.active_cycle == 4:
             self.carLights[7].setColor(Color.GREEN)
             self.carLights[8].setColor(Color.GREEN)
-            print(f"[{self.get_timestamp()}] Döngü 4 aktif - Işık 7,8 yeşil")
+
+            self.walkLights[2].setColor(Color.GREEN)
+            self.walkLights[4].setColor(Color.GREEN)
+
+            print(f"[{self.get_timestamp()}] Döngü 4 aktif - Trafik Işık 7,8; Yaya Işık 2,4 yeşil")
 
     #random insan ve araba oluşturacağız
     def generate_Random(self):
-        
-        if self.current_time % 3 == 0:
-            if random.randint(1,100) <= 40: # %40 ihtimalle araba oluştur
+        # Araba oluşturma
+        if self.current_time % self.car_interval == 0:
+            for _ in range(self.car_count):
                 light_id = random.randint(1,8)
                 car = Car(self.next_car_id, Status.STOPPED, light_id)
                 self.waitingCars[light_id].append(car)
                 self.next_car_id += 1
                 print(f"[{self.get_timestamp()}] Araba {car.id} ışık {light_id}'de bekliyor.")
 
-        if self.current_time % 5 == 0:
-            if random.randint(1,100) <= 30: # %30 ihtimalle yaya oluştur
+        # Yaya oluşturma
+        if self.current_time % self.walker_interval == 0:
+            for _ in range(self.walker_count):
                 light_id = random.randint(1,8)
                 walker = Walker(self.next_walker_id, Status.STOPPED, light_id)
                 self.waitingWalkers[light_id].append(walker)
@@ -141,10 +165,19 @@ class TrafficSystem:
         for light_id in range(1, 9):
             if self.carLights[light_id].getColor() == Color.GREEN:
                 if self.waitingCars[light_id]:
-                    car = self.waitingCars[light_id].popleft()
-                    car.status = Status.MOVING
-                    print(f"[{self.get_timestamp()}] Araba {car.id} ışık {light_id}'den geçti.")
-                    car.status = Status.COMPLETED
+                    sil = 0
+                    while sil < 4 and self.waitingCars[light_id]:
+                        car = self.waitingCars[light_id].popleft()
+                        car.status = Status.MOVING
+                        print(f"[{self.get_timestamp()}] Araba {car.id} ışık {light_id}'den geçti.")
+                        car.status = Status.COMPLETED
+                        sil += 1
+            if self.walkLights[light_id].getColor() == Color.GREEN:
+                if self.waitingWalkers[light_id]:
+                    walker = self.waitingWalkers[light_id].popleft()
+                    walker.status = Status.MOVING
+                    print(f"[{self.get_timestamp()}] Yaya {walker.id} ışık {light_id}'den geçti.")
+                    walker.status = Status.COMPLETED
 
 
     #faz kontrolü
@@ -214,8 +247,8 @@ class TrafficSystem:
             self.process_Traffic()
             self.check_phase_change()
 
-            if self.current_time % 10 == 0:
-                self.print_status()
+            # if self.current_time % 10 == 0:
+            #     self.print_status()
 
             self.current_time += 1
             time.sleep(1)  # 1 saniye bekle 
