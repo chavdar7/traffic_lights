@@ -1,16 +1,12 @@
 # Trafik Işığı Projesi Dokümantasyonu
 
 ## İçindekiler
-
-
-
-
-
 1. [Proje Hakkında](#proje-hakkında)
-2. [Kurulum](#kurulum)
-3. [Kullanım](#kullanım)
-4. [Katkıda Bulunma](#katkıda-bulunma)
-5. [Lisans](#lisans)
+2. [Dosya Yapısı](#dosya-yapısı)
+3. [Kullanıcı Arayüzü](#kullanıcı-arayüzü)
+4. [API Çağrıları ve Sayfalar](#api-çağrıları-ve-sayfalar)
+5. [Bazı Önemli Fonksiyonlar](#bazı-önemli-fonksiyonlar)
+6. [Kurulum ve Çalıştırma](#kurulum-ve-çalıştırma)
 
 
 ## Proje Hakkında
@@ -45,6 +41,7 @@ traffic_lights/
 ---
 
 ## Kullanıcı Arayüzü
+
 ### Kullanıcı Arayüzü Bileşenleri
 - **Trafik Işıklarının ve Yolların Yerini Gösteren Plan**
 - **Trafik Yoğunluğu Ayarı**
