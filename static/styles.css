@@ -169,15 +169,23 @@ body {
 
 /* bekleyenlerin listeleri */
 .waiting-lists{
-    background-color: white;
+    background: white;
     display: grid;
-    grid-template-columns: 1fr 1fr;
     margin-bottom: 30px;
     gap: 20px;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
+
+#waiting-pedestrians-list,
+#waiting-cars-list {
+    display: inline-block;
+    word-break: break-word;
+    table-layout: fixed;
+}
+
+
 
 @keyframes pulse-green {
     0% { 
